@@ -1,4 +1,4 @@
-# Live Editor Ruby SDK
+# Live Editor API Ruby SDK
 
 [![Build Status](https://secure.travis-ci.org/liveeditor/liveeditor_ruby.svg?branch=master)](http://travis-ci.org/liveeditor/liveeditor_ruby)
 
@@ -10,7 +10,7 @@ Ruby 2.2+
 
 ## Installation
 
-To install Live Editor SDK, run this command:
+To install the Live Editor API SDK, run this command:
 
 ```bash
 $ gem install liveeditor
@@ -19,7 +19,7 @@ $ gem install liveeditor
 Or add to your `Gemfile`:
 
 ```ruby
-gem 'liveeditor', '~>0.0.1'
+gem 'liveeditor', '~> 0.0.1'
 ```
 
 ## License

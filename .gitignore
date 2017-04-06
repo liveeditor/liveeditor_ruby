@@ -1,0 +1,14 @@
+bundle
+doc
+pkg
+rdoc
+tmp
+*.gem
+.bundle
+.ruby-gemset
+.ruby-version
+.DS_Store
+._*
+Gemfile.lock
+Dockerfile
+docker-compose.yml
