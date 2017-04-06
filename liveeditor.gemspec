@@ -19,6 +19,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'net_http_ssl_fix'
 
+  gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec',   '~> 3.5.0'
   gem.add_development_dependency 'webmock', '~> 2.3.2'
 end
