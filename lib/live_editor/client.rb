@@ -1,4 +1,5 @@
 require 'uri'
+require 'net_http_ssl_fix'
 require 'live_editor/version'
 
 module LiveEditor
