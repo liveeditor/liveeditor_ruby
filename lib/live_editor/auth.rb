@@ -1,6 +1,6 @@
 module LiveEditor
   class Auth
-    SERVICE = 'auth'
+    SERVICE = :auth
 
     # Log in to the Live Editor API with email and password. Returns hash
     # containing OAuth data: `access_token`, `refresh_token`, etc.).
@@ -22,8 +22,12 @@ module LiveEditor
     # Arguments:
     #
     # -  `refresh_token` - Refresh token.
-    def request_access_token(refresh_token)
-      LiveEditor::client.post('/oauth/token.json', SERVICE, authorize: false, json_api: false, form_data: {
+    #
+    # Options:
+    #
+    # -  'port' - Override the port configured for the client for this request.
+    def request_access_token(refresh_token, options = {})
+      LiveEditor::client.post('/oauth/token.json', SERVICE, authorize: false, json_api: false, port: options[:port], form_data: {
         grant_type: :refresh_token,
         refresh_token: refresh_token
       })

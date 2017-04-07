@@ -29,8 +29,8 @@ RSpec.describe LiveEditor::Client do
       before do
         # First call to endpoint is successful.
         stub_request(:post, 'http://example.cms.api.liveeditorapp.com/layouts')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 1234567890' })
-          .to_return(status: 201, headers: { 'Content-Type' => 'application/vnd.api+json'}, body: payload.to_json)
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 1234567890' })
+          .to_return(status: 201, headers: { 'Content-Type': 'application/vnd.api+json'}, body: payload.to_json)
       end
 
       it 'returns a `LiveEditor::API::Response`' do
@@ -54,13 +54,13 @@ RSpec.describe LiveEditor::Client do
       before do
         # First call to endpoint is unsuccessful.
         stub_request(:post, 'http://example.cms.api.liveeditorapp.com/layouts')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 1234567890' })
-          .to_return(status: 401, headers: { 'Content-Type' => 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 1234567890' })
+          .to_return(status: 401, headers: { 'Content-Type': 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
 
         # Second call to endpoint is successful.
         stub_request(:post, 'http://example.cms.api.liveeditorapp.com/layouts')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 0987654321' })
-          .to_return(status: 201, headers: { 'Content-Type' => 'application/vnd.api+json'}, body: payload.to_json)
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 0987654321' })
+          .to_return(status: 201, headers: { 'Content-Type': 'application/vnd.api+json'}, body: payload.to_json)
       end
 
       it 'returns a `LiveEditor::API::Response`' do
@@ -84,13 +84,13 @@ RSpec.describe LiveEditor::Client do
       before do
         # First call to endpoint is unsuccessful.
         stub_request(:post, 'http://example.cms.api.liveeditorapp.com/layouts')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 1234567890' })
-          .to_return(status: 401, headers: { 'Content-Type' => 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 1234567890' })
+          .to_return(status: 401, headers: { 'Content-Type': 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
 
         # Second call to endpoint is also unsuccessful.
         stub_request(:post, 'http://example.cms.api.liveeditorapp.com/layouts')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 0987654321' })
-          .to_return(status: 401, headers: { 'Content-Type' => 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 0987654321' })
+          .to_return(status: 401, headers: { 'Content-Type': 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
       end
 
       it 'returns a `LiveEditor::API::Response`' do
@@ -117,7 +117,7 @@ RSpec.describe LiveEditor::Client do
     context 'with not found response' do
       before do
         stub_request(:post, 'http://example.cms.api.liveeditorapp.com/layouts')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 1234567890' })
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 1234567890' })
           .to_return(status: 404, body: payload.to_json)
       end
 
@@ -156,8 +156,8 @@ RSpec.describe LiveEditor::Client do
       before do
         # First call to endpoint is successful.
         stub_request(:patch, 'http://example.cms.api.liveeditorapp.com/layouts/1')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 1234567890' })
-          .to_return(status: 200, headers: { 'Content-Type' => 'application/vnd.api+json'}, body: payload.to_json)
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 1234567890' })
+          .to_return(status: 200, headers: { 'Content-Type': 'application/vnd.api+json'}, body: payload.to_json)
       end
 
       it 'returns a `LiveEditor::API::Response`' do
@@ -181,13 +181,13 @@ RSpec.describe LiveEditor::Client do
       before do
         # First call to endpoint is unsuccessful.
         stub_request(:patch, 'http://example.cms.api.liveeditorapp.com/layouts/1')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 1234567890' })
-          .to_return(status: 401, headers: { 'Content-Type' => 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 1234567890' })
+          .to_return(status: 401, headers: { 'Content-Type': 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
 
         # Second call to endpoint is successful.
         stub_request(:patch, 'http://example.cms.api.liveeditorapp.com/layouts/1')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 0987654321' })
-          .to_return(status: 200, headers: { 'Content-Type' => 'application/vnd.api+json'}, body: payload.to_json)
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 0987654321' })
+          .to_return(status: 200, headers: { 'Content-Type': 'application/vnd.api+json'}, body: payload.to_json)
       end
 
       it 'returns a `LiveEditor::API::Response`' do
@@ -211,13 +211,13 @@ RSpec.describe LiveEditor::Client do
       before do
         # First call to endpoint is unsuccessful.
         stub_request(:patch, 'http://example.cms.api.liveeditorapp.com/layouts/1')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 1234567890' })
-          .to_return(status: 401, headers: { 'Content-Type' => 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 1234567890' })
+          .to_return(status: 401, headers: { 'Content-Type': 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
 
         # Second call to endpoint is also unsuccessful.
         stub_request(:patch, 'http://example.cms.api.liveeditorapp.com/layouts/1')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 0987654321' })
-          .to_return(status: 401, headers: { 'Content-Type' => 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 0987654321' })
+          .to_return(status: 401, headers: { 'Content-Type': 'application/json' }, body: { error: 'Unauthorized request' }.to_json)
       end
 
       it 'returns a `LiveEditor::API::Response`' do
@@ -244,7 +244,7 @@ RSpec.describe LiveEditor::Client do
     context 'with not found response' do
       before do
         stub_request(:patch, 'http://example.cms.api.liveeditorapp.com/layouts/1')
-          .with(body: payload.to_json, headers: { 'Authorization' => 'Bearer 1234567890' })
+          .with(body: payload.to_json, headers: { 'Authorization': 'Bearer 1234567890' })
           .to_return(status: 404, body: payload.to_json)
       end
 
