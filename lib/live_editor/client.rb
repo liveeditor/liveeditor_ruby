@@ -10,9 +10,8 @@ module LiveEditor
     USER_AGENT = "liveeditor_api gem/#{LiveEditor::VERSION} (#{RUBY_PLATFORM}) ruby/#{RUBY_VERSION}"
 
     # Attributes
-    attr_accessor :domain, :port, :email, :access_token, :refresh_token, :_use_ssl
+    attr_accessor :domain, :email, :access_token, :refresh_token
     attr_writer :user_agent # Reader is defined below.
-    alias_method :_use_ssl?, :_use_ssl
 
     # Constructor.
     #
@@ -20,21 +19,24 @@ module LiveEditor
     #
     # -  `domain` - Admin domain to connect to. For example,
     #    `example.liveeditorapp.com`.
-    # -  `port` - Port to connect to if different than `80` or `443`.
     # -  `email` - Email used to log in.
     # -  `access_token` - Access token to use for request authorization.
     # -  `refresh_token` - Refresh token to use if `access_token` is not set
     #    or is expired.
     # -  `user_agent` - Overrides default user agent used in request headers.
-    # -  `_use_ssl` - Whether or not to connect with SSL.
     def initialize(options = {})
       @domain = options[:domain]
-      @port = options[:port]
       @email = options[:email]
       @access_token = options[:access_token]
       @refresh_token = options[:refresh_token]
       @user_agent = options[:user_agent]
       @_use_ssl = options[:_use_ssl]
+
+      @_ports = {
+        auth: options[:_auth_port],
+        cms:  options[:_cms_port],
+        cdn:  options[:_cdn_port]
+      }
     end
 
     # Performs a `GET` operation on the Live Editor API.
@@ -53,11 +55,9 @@ module LiveEditor
     #    follow the JSON API specification. Defaults to `true`.
     # -  `domain` - Override the domain configured for the client for this
     #    request. See the `domain` option for this class's constructor.
-    # -  'port' - Override the port configured for the client for this request.
-    #    See the `port` option for this class's constructor.
     def get(url, service, options = {})
       uri = self.uri_for(url, service, domain: options[:domain])
-      run_request_for(uri, Net::HTTP::Get.new(uri), options)
+      run_request_for(uri, service, Net::HTTP::Get.new(uri), options)
     end
 
     # Performs a `PATCH` operation on the Live Editor API.
@@ -82,11 +82,9 @@ module LiveEditor
     #    the `payload` option.
     # -  `domain` - Override the domain configured for the client for this
     #    request. See the `domain` option for this class's constructor.
-    # -  'port' - Override the port configured for the client for this request.
-    #    See the `port` option for this class's constructor.
     def patch(url, service, options = {})
       uri = self.uri_for(url, service, domain: options[:domain])
-      run_request_for(uri, Net::HTTP::Patch.new(uri), options)
+      run_request_for(uri, service, Net::HTTP::Patch.new(uri), options)
     end
 
     # Performs a `POST` operation on the Live Editor API.
@@ -111,11 +109,9 @@ module LiveEditor
     #    the `payload` option.
     # -  `domain` - Override the domain configured for the client for this
     #    request. See the `domain` option for this class's constructor.
-    # -  'port' - Override the port configured for the client for this request.
-    #    See the `port` option for this class's constructor.
     def post(url, service, options = {})
       uri = self.uri_for(url, service, domain: options[:domain])
-      run_request_for(uri, Net::HTTP::Post.new(uri), options)
+      run_request_for(uri, service, Net::HTTP::Post.new(uri), options)
     end
 
     # Performs a `DELETE` operation on the Live Editor API.
@@ -134,15 +130,12 @@ module LiveEditor
     #    follow the JSON API specification. Defaults to `true`.
     # -  `domain` - Override the domain configured for the client for this
     #    request. See the `domain` option for this class's constructor.
-    # -  'port' - Override the port configured for the client for this request.
-    #    See the `port` option for this class's constructor.
     def delete(url, service, options = {})
       uri = self.uri_for(url, service, domain: options[:domain])
-      run_request_for(uri, Net::HTTP::Post.new(uri), options)
+      run_request_for(uri, service, Net::HTTP::Delete.new(uri), options)
     end
 
-    # Returns `URI` object configured with `domain`, `_use_ssl?`, and provided
-    # parameters.
+    # Returns `URI` object configured with `domain` and provided parameters.
     #
     # Arguments:
     #
@@ -154,7 +147,7 @@ module LiveEditor
     #
     # -  `domain` - Overrides the `domain` setting configured on this instance.
     def uri_for(path, service, options = {})
-      protocol = self._use_ssl? ? 'https' : 'http'
+      protocol = @_use_ssl ? 'https' : 'http'
 
       my_domain = options[:domain] || self.domain
       api_domain = my_domain.split('.').insert(1, 'api')
@@ -182,14 +175,9 @@ module LiveEditor
     # Requests an access token from the API's OAuth endpoint.
     #
     # Raises `LiveEditor::OAuthRefreshError` if it fails refreshing the token.
-    #
-    # Options:
-    #
-    # -  'port' - Override the port configured for the client for this request.
-    #    See the `port` option for this class's constructor.
-    def request_access_token!(options = {})
+    def request_access_token!
       auth = LiveEditor::Auth.new
-      response = auth.request_access_token(self.refresh_token, options)
+      response = auth.request_access_token(self.refresh_token)
 
       if response.success?
         data = response.parsed_body
@@ -202,7 +190,7 @@ module LiveEditor
     end
 
     # Runs request for given URI object and HTTP request object.
-    def run_request_for(uri, request, options)
+    def run_request_for(uri, service, request, options)
       # Option defaults.
       options[:authorize] = options.has_key?(:authorize) ? options[:authorize] : true
       options[:json_api] = options.has_key?(:json_api) ? options[:json_api] : true
@@ -210,7 +198,7 @@ module LiveEditor
       # Request access token if we're authorizing the request and none is set.
       refreshed_oauth =
         if options[:authorize] && !self.access_token
-          request_access_token!(options)
+          request_access_token!
         elsif options[:refreshed_oauth]
           options[:refreshed_oauth]
         end
@@ -223,9 +211,7 @@ module LiveEditor
       request.set_form_data(options[:form_data]) if options[:form_data]
       request.body = options[:payload].to_json if options[:payload]
 
-      # Do request and return response.
-      my_port = options[:port] || self.port
-      http_response = Net::HTTP.start(uri.hostname, my_port) { |http| http.request(request) }
+      http_response = Net::HTTP.start(uri.hostname, @_ports[service]) { |http| http.request(request) }
       response = LiveEditor::Response.new(http_response, refreshed_oauth)
 
       # If response was unauthorized, refresh access token and try one more
@@ -233,7 +219,7 @@ module LiveEditor
       if response.unauthorized? && options[:authorize] && !refreshed_oauth
         token_refresh_data = request_access_token!
         request['Authorization'] = "Bearer #{self.access_token}"
-        run_request_for(uri, request, refreshed_oauth: token_refresh_data)
+        run_request_for(uri, service, request, refreshed_oauth: token_refresh_data)
       # Otherwise, return response as-is.
       else
         response
