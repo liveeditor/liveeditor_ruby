@@ -20,20 +20,7 @@ module LiveEditor
     def errors
       # JSON API errors
       if self.error? && self.json_api? && self.parsed_body.has_key?('errors')
-        response_errors = self.parsed_body['errors']
-        translated_errors = {}
-
-        response_errors.each do |error|
-          key = error['source']['pointer'].sub('/data/attributes/', '')
-
-          if translated_errors.has_key?(key)
-            translated_errors[key] << error['detail']
-          else
-            translated_errors[key] = [ error['detail'] ]
-          end
-        end
-
-        translated_errors
+        self.parsed_body['errors']
       # Plain old JSON error
       elsif self.error? && self.json? && self.parsed_body.has_key?('error')
         [{ 'detail' => self.parsed_body['error'] }]

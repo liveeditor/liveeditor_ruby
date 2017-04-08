@@ -34,15 +34,17 @@ RSpec.describe LiveEditor::Response do
         error_response.add_field('Content-Type', 'application/vnd.api+json')
         error_response.instance_variable_set(:@body, {
           errors: [
-            { detail: "can't be blank", source: { pointer: '/data/attributes/title' } }
+            { detail: "can't be blank", source: { pointer: '/data/attributes/title' }, status: '422' }
           ]
         }.to_json)
         error_response.instance_variable_set(:@read, true)
         response = LiveEditor::Response.new(error_response)
 
-        expect(response.errors).to eql({
-          'title' => ["can't be blank"]
-        })
+        expect(response.errors).to eql([{
+          'detail' => "can't be blank",
+          'source' => { 'pointer' => '/data/attributes/title' },
+          'status' => '422'
+        }])
       end
     end
 
