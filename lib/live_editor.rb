@@ -1,6 +1,7 @@
 require 'live_editor/client'
 require 'live_editor/response'
 require 'live_editor/auth'
+require 'live_editor/cms'
 
 module LiveEditor
   # Sets client to use for calls to API.
